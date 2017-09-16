@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author guerra
  */
-public class Recive_Thread {
+public class Recive_Thread extends Thread {
 
     DatagramSocket reciveSocket;
 

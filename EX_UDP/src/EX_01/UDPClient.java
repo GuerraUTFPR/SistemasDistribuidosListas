@@ -24,7 +24,7 @@ public class UDPClient {
         //System.out.println("send instanciada");
         //System.out.println("instanciando recive");
         Recive_Thread rt = new Recive_Thread(aSocket);
-        rt.run();
+        rt.start();
         //System.out.println("recive inicializada");
         
 
