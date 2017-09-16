@@ -17,14 +17,15 @@ public class UDPClient {
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
         }
-        System.out.println("instanciando send thread");
+        //System.out.println("instanciando send thread");
         Send_Thread send = new Send_Thread(aSocket);
         send.start();
-        System.out.println("send instanciada");
-        System.out.println("instanciando recive");
+        
+        //System.out.println("send instanciada");
+        //System.out.println("instanciando recive");
         Recive_Thread rt = new Recive_Thread(aSocket);
         rt.run();
-        System.out.println("recive inicializada");
+        //System.out.println("recive inicializada");
         
 
     } //main		      	
