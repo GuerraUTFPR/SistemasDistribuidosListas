@@ -23,8 +23,9 @@ public class Send_Thread extends Thread {
     DatagramSocket sendSocket;
 
     public Send_Thread(DatagramSocket socket) {
-        this.sendSocket = socket;
-        this.run();
+        this.sendSocket = socket;        
+        //this.run();
+      
     }
 
     public void run() {

@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package EX_01;
 
 /**
@@ -6,7 +11,7 @@ package EX_01;
  */
 import java.net.*;
 
-public class UDPClient {
+public class UDPClient2 {
 
     public static void main(String args[]) {
         /* args[0]: mensagem  e args[1]: ip destino */
@@ -17,16 +22,10 @@ public class UDPClient {
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
         }
-        System.out.println("instanciando send thread");
-        Send_Thread send = new Send_Thread(aSocket);
-        send.start();
-        System.out.println("send instanciada");
-        System.out.println("instanciando recive");
         Recive_Thread rt = new Recive_Thread(aSocket);
-        rt.run();
-        System.out.println("recive inicializada");
-        
+        Send_Thread send = new Send_Thread(aSocket);
 
     } //main		      	
 } //class
+
 
