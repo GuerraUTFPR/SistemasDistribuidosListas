@@ -1,4 +1,4 @@
-# Lista 3 de Sistemas Distribuidos
+# Lista 3 de Sistemas Distribuidos (Comunicação TCP)
 
 1) Modificar o código para que o cliente possa enviar mensagens (ler o que foi digitado) e o servidor envia a mensagem 'RECEBIDO'. Quando o cliente enviar 'SAIR',  o servidor vai enviar 'ACKSAIR' e finalizar a thread. Use o TCP.
 
@@ -25,3 +25,9 @@ EXIT
 * Finaliza a conexão
 
 5) Fazer uma aplicação com um servidor que gerencia a comunicação entre dois clientes usando TCP. Para cada cliente é criada uma thread no servidor. A comunicação entre as threads deve usar recursos como pipe ou memória compartilhada.
+
+#Lista 4 de Sistemas Distribuidos (Comunicação UDP)
+
+1) Fazer o chat P2P usando UDP.
+
+2) Fazer um sistema de upload de arquivos via UDP. Um servidor UDP deverá receber as partes dos arquivos (1024 bytes), verificar ao final a integridade via um checksum e armazenar o arquivo em uma pasta padrão.
