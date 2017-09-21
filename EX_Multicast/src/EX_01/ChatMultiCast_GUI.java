@@ -40,7 +40,7 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
     }
 
     public synchronized void exibeMsgOutros(String msg) {
-        areaMsg.append("alguém disse: " + msg + "\n");
+        areaMsg.append(msg + "\n");
 
     }
 
@@ -67,7 +67,7 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
         botaoSAir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Multicast");
+        setTitle("Chat multicast");
 
         jLabel1.setText("Apelido:");
 
@@ -190,7 +190,7 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
             System.out.println("IO: " + e.getMessage());
         }
 
-        this.exibeMsg(msg);
+        //this.exibeMsg(msg);
         textMsg.setText("");
         textMsg.requestFocus();
     }//GEN-LAST:event_botaoEnviarActionPerformed
@@ -233,6 +233,7 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
             botaoEntrar.setBackground(Color.gray);
 
             ListenerThread lt = new ListenerThread(this, s);
+            lt.start();            
         }
     }//GEN-LAST:event_botaoEntrarActionPerformed
 

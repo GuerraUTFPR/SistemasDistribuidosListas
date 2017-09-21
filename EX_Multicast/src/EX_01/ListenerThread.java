@@ -23,6 +23,7 @@ public class ListenerThread extends Thread {
     public ListenerThread(ChatMultiCast_GUI chatGUI, MulticastSocket mcSocket) {
         this.mcSocket = mcSocket;
         this.chatGUI = chatGUI;
+        
     }
 
     @Override
@@ -30,7 +31,7 @@ public class ListenerThread extends Thread {
         while (mcSocket != null) {
             byte[] buffer = new byte[1000];            
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
-
+            System.out.println("teste");
             try {
                 mcSocket.receive(messageIn);
             } catch (SocketException e) {
@@ -39,7 +40,7 @@ public class ListenerThread extends Thread {
                 System.out.println("IO: " + e.getMessage());
             }
             chatGUI.exibeMsgOutros(new String(messageIn.getData()));            
-            
+           
         }
         
     }
