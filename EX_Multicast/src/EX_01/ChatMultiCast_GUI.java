@@ -11,8 +11,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,19 +23,24 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
     String apelido;
     InetAddress group;
     MulticastSocket s = null;
+    Color botaoCor;
 
     public ChatMultiCast_GUI() {
         initComponents();
         textMsg.requestFocus();
 
-    }
-
-    public synchronized void exibeMsg(String apelido, String msg) {
-        areaMsg.append("[" + apelido + "]:" + msg + "\n");
+        botaoEnviar.setEnabled(false);
+        botaoEnviar.setBackground(Color.gray);
 
     }
-      public synchronized void exibeMsgOutros(String msg) {
-        areaMsg.append("alguém disse: "+ msg + "\n");
+
+    public synchronized void exibeMsg(String msg) {
+        areaMsg.append(msg + "\n");
+
+    }
+
+    public synchronized void exibeMsgOutros(String msg) {
+        areaMsg.append("alguém disse: " + msg + "\n");
 
     }
 
@@ -104,6 +107,11 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
         });
 
         botaoSAir.setText("Sair grupo");
+        botaoSAir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoSAirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -167,10 +175,12 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botaoEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEnviarActionPerformed
+        String msg = textMsg.getText();        
+        msg = this.apelido + msg;
 
-        byte[] m = this.textMsg.getText().getBytes();
+        byte[] m = msg.getBytes();
         DatagramPacket messageOut = new DatagramPacket(m, m.length, this.group, this.port);
-        
+
         try {
             this.s.send(messageOut);
         } catch (SocketException e) {
@@ -179,13 +189,15 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
             System.out.println("IO: " + e.getMessage());
         }
 
-        this.exibeMsg(textApelido.getText(), textMsg.getText());
+        this.exibeMsg(msg);
         textMsg.setText("");
         textMsg.requestFocus();
     }//GEN-LAST:event_botaoEnviarActionPerformed
 
     private void botaoEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEntrarActionPerformed
         if (!(textApelido.getText().equals("") || textIP.getText().equals("") || textPort.getText().equals(""))) {
+
+            botaoCor = botaoEntrar.getBackground();
 
             this.ip = textIP.getText();
             textIP.setEditable(false);
@@ -196,6 +208,7 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
             textPort.setBackground(Color.gray);
 
             this.apelido = textApelido.getText();
+            this.apelido = ("[" + this.apelido + "]: ");
             textApelido.setEditable(false);
             textApelido.setBackground(Color.gray);
 
@@ -212,12 +225,42 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
 
             areaMsg.append("Conectado.\n");
 
+            botaoEnviar.setEnabled(true);
+            botaoEnviar.setBackground(botaoCor);
+
             botaoEntrar.setEnabled(false);
             botaoEntrar.setBackground(Color.gray);
 
-            ListenerThread lt = new ListenerThread(this ,s);
+            ListenerThread lt = new ListenerThread(this, s);
         }
     }//GEN-LAST:event_botaoEntrarActionPerformed
+
+    private void botaoSAirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoSAirActionPerformed
+        textIP.setText("225.1.2.3");
+        textIP.setEditable(true);
+        textIP.setBackground(Color.white);
+
+        textPort.setText("5678");
+        textPort.setEditable(true);
+        textPort.setBackground(Color.white);
+
+        textApelido.setText("");
+        textApelido.setEditable(true);
+        textApelido.setBackground(Color.white);
+
+        botaoEntrar.setEnabled(true);
+        botaoEntrar.setBackground(botaoCor);
+
+        areaMsg.setText("");
+
+        try {
+            s.leaveGroup(this.group);
+        } catch (SocketException e) {
+            System.out.println("Socket: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("IO: " + e.getMessage());
+        }
+    }//GEN-LAST:event_botaoSAirActionPerformed
 
     /**
      * @param args the command line arguments
