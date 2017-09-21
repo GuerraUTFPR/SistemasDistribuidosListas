@@ -67,6 +67,7 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
         botaoSAir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Multicast");
 
         jLabel1.setText("Apelido:");
 
