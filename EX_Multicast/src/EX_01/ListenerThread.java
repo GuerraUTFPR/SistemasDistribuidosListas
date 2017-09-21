@@ -31,7 +31,7 @@ public class ListenerThread extends Thread {
         while (mcSocket != null) {
             byte[] buffer = new byte[1000];            
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
-            System.out.println("teste");
+            //System.out.println("teste");
             try {
                 mcSocket.receive(messageIn);
             } catch (SocketException e) {
