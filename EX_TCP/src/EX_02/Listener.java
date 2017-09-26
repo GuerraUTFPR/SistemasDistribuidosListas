@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author guerra
  */
-public class Send extends Thread {
+public class Listener extends Thread {
     DataInputStream in;
     DataOutputStream out;
     Socket sendSocket;
@@ -25,7 +25,7 @@ public class Send extends Thread {
     String recebido;
     Scanner sc = new Scanner(System.in);
 
-    public Send(Socket aClientSocket) {
+    public Listener(Socket aClientSocket) {
         this.sendSocket = aClientSocket;
         this.start();
     }

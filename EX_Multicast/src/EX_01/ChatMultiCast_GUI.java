@@ -17,7 +17,7 @@ import java.net.SocketException;
  * @author guerra
  */
 public class ChatMultiCast_GUI extends javax.swing.JFrame {
-
+    Integer aux;
     String ip;
     Integer port;
     String apelido;
@@ -257,6 +257,8 @@ public class ChatMultiCast_GUI extends javax.swing.JFrame {
 
         try {
             s.leaveGroup(this.group);
+            aux = 0;
+            //lt.interrupt();
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
         } catch (IOException e) {

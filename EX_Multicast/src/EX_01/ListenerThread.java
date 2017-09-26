@@ -28,19 +28,21 @@ public class ListenerThread extends Thread {
 
     @Override
     public void run() {
-        while (mcSocket != null) {
+        while (true) {
             byte[] buffer = new byte[1000];            
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
             //System.out.println("teste");
+            
             try {
-                mcSocket.receive(messageIn);
+                mcSocket.receive(messageIn);                
+                String msg = new String(messageIn.getData(), 0, messageIn.getLength());
+                chatGUI.exibeMsgOutros(msg);  
+                
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
             } catch (IOException e) {
                 System.out.println("IO: " + e.getMessage());
             }
-            chatGUI.exibeMsgOutros(new String(messageIn.getData()));            
-           
         }
         
     }

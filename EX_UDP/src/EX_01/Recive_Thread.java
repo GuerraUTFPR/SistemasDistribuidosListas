@@ -21,7 +21,7 @@ public class Recive_Thread extends Thread {
 
     public Recive_Thread(DatagramSocket socket) {
         this.reciveSocket = socket;
-        this.run();
+        //this.run();
 
     }
 
@@ -36,7 +36,7 @@ public class Recive_Thread extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(Recive_Thread.class.getName()).log(Level.SEVERE, null, ex);
             }
-            /* imprime e envia o datagrama de volta ao cliente */
+            /* imprime o datagrama*/
             System.out.println("Cliente: " + new String(request.getData()));
         } //while
     }
