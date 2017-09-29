@@ -3,32 +3,30 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package EX_03;
+package EX_04;
+
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
  *
  * @author guerra
  */
-public class ListennerServidor extends Thread{
-    DataInputStream in;
-    DataOutputStream out;
+public class ListenerCliente extends Thread{
+    DataInputStream in;    
     Socket clientSocket;
-    ServidorGUI gui;
-    
+    ClienteGUI gui;
 
-    public ListennerServidor(ServidorGUI gui, Socket aClientSocket) {
-        this.gui = gui;        
+    public ListenerCliente(ClienteGUI gui, Socket aClientSocket) {
+        this.gui = gui;
+        
         try {
             clientSocket = aClientSocket;
-            in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
+            in = new DataInputStream(clientSocket.getInputStream());           
+            
             /* inicializa a thread */
         } catch (IOException e) {
             System.out.println("Connection:" + e.getMessage());
@@ -41,19 +39,9 @@ public class ListennerServidor extends Thread{
             try {
                 String data = in.readUTF();
                 /* aguarda o envio de dados */
-                data = (clientSocket.getInetAddress() + ": " + data);
+                //System.out.println(data);
                 gui.exibeMsg(data);
-                //out.writeUTF(data);
-                gui.sendMsg(data);
                 
-                /*if(data.equals("!SAIR")){
-                    gui.removeList(clientSocket);
-                    clientSocket.close();
-                    in.close();
-                    out.close();
-                    this.interrupt();
-                    break;
-                }*/
             } catch (EOFException e) {
                 System.out.println("EOF: " + e.getMessage());
             } catch (IOException e) {
@@ -61,4 +49,5 @@ public class ListennerServidor extends Thread{
             } //catch
         }//end while
     } //run
-}
+} //class
+
