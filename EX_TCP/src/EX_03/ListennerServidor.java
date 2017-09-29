@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,9 +21,10 @@ public class ListennerServidor extends Thread{
     DataOutputStream out;
     Socket clientSocket;
     ServidorGUI gui;
+    
 
     public ListennerServidor(ServidorGUI gui, Socket aClientSocket) {
-        this.gui = gui;
+        this.gui = gui;        
         try {
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
@@ -41,7 +43,8 @@ public class ListennerServidor extends Thread{
                 /* aguarda o envio de dados */
                 data = (clientSocket.getInetAddress() + ": " + data);
                 gui.exibeMsg(data);
-                out.writeUTF(data);
+                //out.writeUTF(data);
+                gui.sendMsg(data);
             } catch (EOFException e) {
                 System.out.println("EOF: " + e.getMessage());
             } catch (IOException e) {

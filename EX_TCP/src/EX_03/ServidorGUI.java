@@ -6,6 +6,7 @@
 package EX_03;
 
 import java.awt.Color;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,20 +20,39 @@ public class ServidorGUI extends javax.swing.JFrame {
 
     ArrayList<Socket> list = new ArrayList();
     Integer port;
-    
+    DataOutputStream out;
 
     public ServidorGUI() {
         initComponents();
+    }
+    
+    public void addList(Socket socket){
+        list.add(socket);
+        
+        listaClientes(list);
     }
 
     public synchronized void exibeMsg(String msg) {
         textAreaMsg.append(msg + "\n");
     }
-    public void listaClientes(ArrayList<Socket> list){
+
+    public void listaClientes(ArrayList<Socket> list) {
         textAreaCli.setText("");
         for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i).toString());
-            textAreaCli.append((list.get(i).getInetAddress().toString()));
+            //System.out.println(list.get(i).toString() + "\n");
+            textAreaCli.append((list.get(i).getInetAddress().toString()) + "\n");
+        }
+    }
+
+    public void sendMsg(String data) {
+        for (int i = 0; i < list.size(); i++) {
+            try {
+                out = new DataOutputStream(list.get(i).getOutputStream());
+                System.out.println(data);
+                out.writeUTF(data);
+            } catch (IOException e) {
+                System.out.println("Listen socket:" + e.getMessage());
+            }
         }
     }
 
@@ -130,8 +150,8 @@ public class ServidorGUI extends javax.swing.JFrame {
         textPort.setBackground(Color.gray);
 
         buttonLigar.setEnabled(false);
-        ListenPort lp = new ListenPort(port, list, this);
-            lp.start();
+        ListenPort lp = new ListenPort(port, this);
+        lp.start();
 
     }//GEN-LAST:event_buttonLigarActionPerformed
 
