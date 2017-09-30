@@ -1,10 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+interface gráfica do cliente
  */
 package EX_04;
-
 
 import EX_01.TCPClient;
 import java.awt.Color;
@@ -21,19 +18,19 @@ import java.util.logging.Logger;
  */
 public class ClienteGUI extends javax.swing.JFrame {
 
-    String ip;
+    String ip; //variavel ip
     Integer port;
     ListenerCliente lc;
     Socket s = null;
-
     DataOutputStream out = null;
 
     public ClienteGUI() {
         initComponents();
     }
 
-    public synchronized void exibeMsg(String msg) {
-        textArea.append(msg + "\n");
+    public synchronized void exibeMsg(String msg) {//metodo para inserir texto no textarea
+        areaMsg.append(msg + "\n");
+        
     }
 
     /**
@@ -51,12 +48,13 @@ public class ClienteGUI extends javax.swing.JFrame {
         textPort = new javax.swing.JTextField();
         buttonConnect = new javax.swing.JButton();
         buttonSair = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
         textMsg = new javax.swing.JTextField();
         buttonSend = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        areaMsg = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cliente");
 
         jLabel1.setText("IP:");
 
@@ -80,19 +78,17 @@ public class ClienteGUI extends javax.swing.JFrame {
             }
         });
 
-        textArea.setColumns(20);
-        textArea.setRows(5);
-        textArea.setBorder(javax.swing.BorderFactory.createTitledBorder("Mensagens"));
-        textArea.setName(""); // NOI18N
-        jScrollPane1.setViewportView(textArea);
-        textArea.getAccessibleContext().setAccessibleName("");
-
         buttonSend.setText("Enviar");
         buttonSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonSendActionPerformed(evt);
             }
         });
+
+        areaMsg.setColumns(20);
+        areaMsg.setRows(5);
+        areaMsg.setBorder(javax.swing.BorderFactory.createTitledBorder("Mensagens"));
+        jScrollPane2.setViewportView(areaMsg);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -101,12 +97,12 @@ public class ClienteGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(4, 4, 4)
-                        .addComponent(textIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(textIP, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addGap(3, 3, 3)
                         .addComponent(textPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -132,7 +128,7 @@ public class ClienteGUI extends javax.swing.JFrame {
                     .addComponent(buttonConnect)
                     .addComponent(buttonSair))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buttonSend)
@@ -145,38 +141,40 @@ public class ClienteGUI extends javax.swing.JFrame {
 
     private void buttonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonConnectActionPerformed
 
-        this.ip = textIP.getText();
+        this.ip = textIP.getText();//obtem texo do textfield
         textIP.setEditable(false);
         textIP.setBackground(Color.gray);
 
-        this.port = Integer.parseInt(textPort.getText());
+        this.port = Integer.parseInt(textPort.getText()); //obtem a porta do textfield e converte para integer
         textPort.setEditable(false);
         textPort.setBackground(Color.gray);
 
         try {
-            s = new Socket(ip, port);
+            s = new Socket(ip, port); //cria um socket com as infromaçoes obtidas
         } catch (IOException e) {
             Logger.getLogger("leitura:" + e.getMessage());
         }
 
-        try {
-            out = new DataOutputStream(s.getOutputStream());
-        } catch (IOException e) {
-            Logger.getLogger("leitura:" + e.getMessage());
-        }
-
-        lc = new ListenerCliente(this, s);
-        lc.start();
-        textArea.append("Conectado ao servidor " + ip + ":" + port + "\n");
+        lc = new ListenerCliente(this, s);//instancia uma thread para ficar ouvindo
+        
+        //textArea.append("Conectado ao servidor " + ip + ":" + port + "\n");
         buttonConnect.setEnabled(false);
 
     }//GEN-LAST:event_buttonConnectActionPerformed
 
     private void buttonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSendActionPerformed
-        String msg = textMsg.getText();
+        try {
+            this.out = new DataOutputStream(s.getOutputStream()); //cria objeto de envio de mensagens
+        } catch (IOException e) {
+            Logger.getLogger("leitura:" + e.getMessage());
+        }
+
+        String msg = textMsg.getText(); //obtem texto do textfield
+        
 
         try {
-            out.writeUTF(msg);
+            this.out.writeUTF(msg);//envia mensagem
+            this.out.flush();//limpa o buffer
         } catch (IOException ex) {
             Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -202,8 +200,8 @@ public class ClienteGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonSairActionPerformed
 
     /**
-         * @param args the command line arguments
-         */
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -240,13 +238,13 @@ public class ClienteGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea areaMsg;
     private javax.swing.JButton buttonConnect;
     private javax.swing.JButton buttonSair;
     private javax.swing.JButton buttonSend;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea textArea;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField textIP;
     private javax.swing.JTextField textMsg;
     private javax.swing.JTextField textPort;

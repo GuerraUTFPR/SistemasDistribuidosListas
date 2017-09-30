@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Esta thread tem como finalidade, receber mensagens do cliente, processar e retornar um mensagem para o cliente.
  */
 package EX_04;
 
@@ -9,8 +7,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -22,83 +22,101 @@ import java.util.Date;
  */
 public class ListennerServidor extends Thread {
 
-    DataInputStream in;
-    DataOutputStream out;
-    Socket clientSocket;
-    ServidorGUI gui;
-    String svdata;
+    private DataInputStream in;
+    private DataOutputStream outINT;
+    private DataOutputStream out;
+    private Socket clientSocket;
+    private String svdata;
+    boolean control = true;
 
-    public ListennerServidor(ServidorGUI gui, Socket aClientSocket) {
-        this.gui = gui;
-        try {
-            clientSocket = aClientSocket;
-            in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
-            /* inicializa a thread */
+    public ListennerServidor(Socket aClientSocket) {
+        try {            
+            this.clientSocket = aClientSocket;
+            
+            //cria objetos de entrada e saida
+            this.in = new DataInputStream(this.clientSocket.getInputStream()); //intancia objeto para receber mensagens
+            this.out = new DataOutputStream(this.clientSocket.getOutputStream()); //instancia objeto para enviar mensagens 
+            this.outINT = new DataOutputStream(this.clientSocket.getOutputStream()); //instancia objeto para enviar mensagens
+            this.start(); //inicia a thread
         } catch (IOException e) {
             System.out.println("Connection:" + e.getMessage());
         } //catch
     } //construtor
 
     /* metodo executado ao iniciar a thread - start() */
+    @Override
     public void run() {
-        while (true) {
+        while (control) {
             try {
-                String data = in.readUTF();
-                /* aguarda o envio de svdatas */
-                data = (clientSocket.getInetAddress() + ": " + data);
-                gui.exibeMsg(data);
-                //out.writeUTF(data);
-                gui.sendMsg(data);
+                String data = this.in.readUTF(); //aguarda o envio de mensagens 
+                //data = (this.clientSocket.getInetAddress() + ": " + data);
+                System.out.println(data); //registra mensagem e quem enviou
 
-                String[] partes = data.split(" ");
+                String[] partes = data.split(" ");//obtem a parte de string da mensagem recebida
 
-                switch (partes[1]) {
-                    case "!TIME":
-                        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                switch (partes[0]) {
+                    case "TIME":
+                        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss"); //instancia objeto para tratar tempo
                         Date time = new Date();
-                        svdata = "[Servidor]: Hora local: " + timeFormat.format(time);
-                        out.writeUTF(svdata);
-                        gui.exibeMsg(svdata);
+                        this.svdata = "[Servidor]: Hora local: " + timeFormat.format(time); //armazena horario atual em svdata
+                        this.out.writeUTF(this.svdata);//retorna para o cliente
+                        this.out.flush();//
                         break;
 
-                    case "!DATE":
-                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    case "DATE":
+                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");//instancia objeto para tratar data
                         Date date = new Date();
-                        svdata = "[Servidor]: Data local: " + dateFormat.format(date);
-                        out.writeUTF(svdata);
-                        gui.exibeMsg(svdata);
+                        this.svdata = "[Servidor]: Data local: " + dateFormat.format(date);
+                        this.out.writeUTF(this.svdata); //retorna mensagem para o cliente
+                        this.out.flush();
                         break;
 
-                    case "!FILES":
-                        svdata = "";
-                        File dir = new File("/home/guerra/Downloads/");
+                    case "FILES":
+                        File dir = new File("/home/guerra/Downloads/teste/");
                         File[] filesList = dir.listFiles();
-                        String cabecalho = "[Servidor]: \n"
-                                + "=-=-=-=-=-= FILES =-=-=-=-=-=\n";
+                        int tam = filesList.length;
+                        out.writeUTF(String.valueOf(tam));
+                        out.flush();
+                        //out.writeInt(tam);
                         for (File file : filesList) {
                             if (file.isFile()) {
-                                svdata = svdata + "-> " + file.getName() + "\n";
+                                out.writeUTF(file.getName());
+                                out.flush();
                             }
-
                         }
-                        String rodape = "=-=-=-=-= END FILES =-=-=-=-=\n";
-                        svdata = cabecalho + svdata + rodape;
-
-                        out.writeUTF(svdata);
-                        gui.exibeMsg(svdata);
                         break;
 
-                }
+                    case "DOWN":
+                        File dir2 = new File("/home/guerra/Downloads/teste");
+                        File[] filesList2 = dir2.listFiles();
+                        for (File file : filesList2) {
+                            if (file.getName().equals(partes[1])) {
+                                out.writeUTF("tamanho" + String.valueOf(file.length()));
+                                out.flush();
+                                String path = ("/home/guerra/Downloads/teste/" + file.getName());
+                                FileOutputStream fout = new FileOutputStream(path);
+                                byte[] bytesArray = Files.readAllBytes(new File("path").toPath());
+                                fout.write(bytesArray);
+                            } else {
+                                out.writeUTF("0");
+                            }
+                            out.flush();
+                        }
+                        break;
 
-                /*if(data.equals("!SAIR")){
-                    gui.removeList(clientSocket);
-                    clientSocket.close();
-                    in.close();
-                    out.close();
-                    this.interrupt();
-                    break;
-                }*/
+                    case "EXIT":
+                        System.out.println(clientSocket.getInetAddress() + " Desconectou-se");
+                        out.writeUTF("ACKEXIT");
+                        in.close();
+                        out.close();
+                        clientSocket.close();
+                        control = false;
+                        break;
+
+                    default:
+                        out.writeUTF(data);// devolve a mensagem para o cliente, caso não seja qualquer comando inserido
+
+                }
             } catch (EOFException e) {
                 System.out.println("EOF: " + e.getMessage());
             } catch (IOException e) {
