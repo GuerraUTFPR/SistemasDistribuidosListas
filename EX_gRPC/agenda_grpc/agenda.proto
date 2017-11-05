@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+// interface de serviço
+service Agenda {
+  rpc AddContato(Contato) returns(Msg) {}
+  rpc RmContato(Contato) returns(Msg) {}
+  rpc ListContato(Request) returns(stream Contato){}
+}
+
+message Contato {
+	string nome = 1;
+	string telefone = 2;
+}
+
+message Msg {
+	string mensagem = 1;
+}
+
+message Request{
+	string request = 1;
+}
